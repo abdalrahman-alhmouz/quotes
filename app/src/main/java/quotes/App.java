@@ -3,29 +3,151 @@
  */
 package quotes;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.GsonBuilder;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class App {
+    public static ArrayList<Contact> contacts=new ArrayList<Contact>();
+    public static void main(String[] args)  {
+        String urlApi="http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
 
-    public static void main(String[] args) throws FileNotFoundException {
+        try {
+           URL url = new URL(urlApi);
+            String jsoData=getjson(url);
+            ReqContent readJson=getJsonObject(jsoData);
+            System.out.println(readJson);
+            Contact cont =new Contact();
+            cont.author=readJson.quoteAuthor;
+            cont.text=readJson.quoteText;
 
-        System.out.println(randomBook("app/src/main/resources/recentquotes.json").getClass().getName());
+            writeQoute(cont,"app/src/main/resources/recentquotes.json");
+
+
+        } catch (MalformedURLException malformedURLException) {
+            malformedURLException.printStackTrace();
+        } catch (IOException ioException) {
+            try {
+                System.out.println(randomBook("app/src/main/resources/recentquotes.json"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
 
     }
+
+    public static ReqContent getJsonObject(String jsoData) {
+        Gson gson=new Gson();
+        ReqContent apiQouts = gson.fromJson(jsoData, ReqContent.class);
+        return apiQouts;
+    }
+
+
+    public static String getjson(URL url) throws IOException {
+        String content="";
+        HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+        connection.setRequestMethod("GET");
+
+        int status=connection.getResponseCode();
+        if (status==200){
+            BufferedReader reader= getBuferrReader(connection);
+//            BufferedWriter writer= getBuferrReader(connection);
+            content= getContent(reader);
+            reader.close();
+        }else {
+            System.out.println("you have error in Api");
+        }
+
+
+        connection.disconnect();
+        return content;
+    }
+
+    private static String getContent(BufferedReader reader) throws IOException {
+        StringBuilder builder=new StringBuilder();
+        String currentLine= reader.readLine();
+        while (currentLine!=null){
+            builder.append(currentLine);
+            currentLine= reader.readLine();
+        }
+        return builder.toString();
+    }
+
+
+    private static BufferedReader getBuferrReader(HttpURLConnection connection) throws IOException {
+        InputStream inputt= connection.getInputStream();
+        InputStreamReader inpuReader=new InputStreamReader(inputt);
+
+        return   new BufferedReader(inpuReader);   }
+
     public static String randomBook(String path) throws FileNotFoundException {
         Gson gson=new Gson();
         Reader reader = new FileReader(path);
         Contact[] book = gson.fromJson(reader, Contact[].class);
         int rand= (int) (Math.random()*book.length);
-//        System.out.println();
-        return ""+book[rand];
+        return book[rand].toString();
     }
+    private static final Type REVIEW_TYPE = new TypeToken<ArrayList<Contact>>() {
+    }.getType();
+    public static ArrayList<Contact> getAllQuote(String path){
+        try{
+            Reader reader = new FileReader(path);
+            Gson gson = new Gson();
+            contacts = gson.fromJson(reader,REVIEW_TYPE);
+            System.out.println(contacts);
+
+        }catch (Exception ex){
+            System.out.println(ex);
+        };
+        return  contacts;
+    };
+    public static void writeQoute(Contact mycontent,String path) throws IOException {
+        BufferedWriter bw = null;
+        try {
+            File file = new File(path);
+            getAllQuote(path);
+//            System.out.println(contacts.size());
+            contacts.add(mycontent);
+//            System.out.println(contacts.size());
+
+            try (Writer writer = new FileWriter(path)) {
+                Gson gson = new GsonBuilder().create();
+                gson.toJson(contacts, writer);
+            }
+
+            if (!file.exists()) {
+                file.createNewFile();
+
+            }
+//            FileWriter fw = new FileWriter(file,true);
+//            bw = new BufferedWriter(fw);
+//            bw.write(mycontent);
+//            System.out.println(mycontent);
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        finally
+        {
+            try{
+                if(bw!=null)
+                    bw.close();
+            }catch(Exception ex){
+                System.out.println("Error in closing the BufferedWriter"+ex);
+            }
+
+        }
+    }
+
+
+
 }

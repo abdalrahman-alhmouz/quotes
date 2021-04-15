@@ -1,4 +1,6 @@
 # quotes
-* int this lab we need create  random popular book quote by using Gson file 
+* int this lab we need create  random popular  quote by using Api  file 
 
-* firt thing i did was geting  the json file then a class Contact to read the json with to string method  then in App java i did the randomBook method that creat a random number an get a random book ;
+* The first thing I did is get an Api then (class ReqContent) to read the data in the Api and then write the data, and also if the internet is bad then the data I will receive becomes from the Json file.
+Then I created a writeQoute method that  accept String 
+With all the qoutes i received i will write it in the json file
