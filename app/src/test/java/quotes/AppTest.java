@@ -14,10 +14,17 @@ public class AppTest {
   public void testBook(){
       App app=new App();
       try {
-          assertEquals("java.lang.String", app.randomBook("src\\main\\resources\\recentquotes.json").getClass().getName());
+          assertEquals("quotes.Qoute", app.randomBook("src\\main\\resources\\recentquotes.json").getClass().getName());
       } catch (FileNotFoundException e) {
           e.printStackTrace();
       }
 
   }
+    @Test public void testGetRandomQuote() throws FileNotFoundException {
+        App classUnderTest = new App();
+        Qoute quote = classUnderTest.randomBook("src\\main\\resources\\recentquotes.json");
+        assertEquals("Test the Type Of the Output of getQuote Method", true, quote instanceof Qoute);
+        assertEquals("The first part of the output","The quote is",quote.toString().split(":")[0]);
+        assertEquals("The text of the quote != null",false,quote.toString().split(":")[1] == null);
+    }
 }
