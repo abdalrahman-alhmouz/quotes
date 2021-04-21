@@ -60,7 +60,6 @@ public class App {
         int status=connection.getResponseCode();
         if (status==200){
             BufferedReader reader= getBuferrReader(connection);
-//            BufferedWriter writer= getBuferrReader(connection);
             content= getContent(reader);
             reader.close();
         }else {
@@ -103,7 +102,6 @@ public class App {
             Reader reader = new FileReader(path);
             Gson gson = new Gson();
             contacts = gson.fromJson(reader,REVIEW_TYPE);
-            System.out.println(contacts);
 
         }catch (Exception ex){
             System.out.println(ex);
