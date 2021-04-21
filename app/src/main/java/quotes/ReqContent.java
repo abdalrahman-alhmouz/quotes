@@ -7,10 +7,9 @@ public class ReqContent {
 
     @Override
     public String toString() {
-        return "ReqContent{" +
-                "quoteText='" + quoteText + '\'' +
-                ", quoteAuthor='" + quoteAuthor + '\'' +
-                ", quoteLink='" + quoteLink + '\'' +
-                '}';
+        return
+                "quoteText='" + quoteText +
+                "\n  quoteAuthor='" + quoteAuthor  +
+                " \n  quoteLink='" + quoteLink ;
     }
 }
