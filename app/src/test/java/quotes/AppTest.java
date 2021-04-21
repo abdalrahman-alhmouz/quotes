@@ -6,65 +6,25 @@ package quotes;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class AppTest {
-    @Test
-    public void testBook(){
-        App app=new App();
-        String urlApi="http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
-        try {
-           URL url = new URL(urlApi);
-            String jsoData=app.getjson(url);
-            assertEquals("java.lang.String", app.getjson(url).getClass().getName());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-@Test public void tetst(){
-    App app=new App();
-    String urlApi="http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
-    try {
-        URL url = new URL(urlApi);
-        String jsoData=app.getjson(url);
-        System.out.println(jsoData);
-        assertTrue("true",jsoData.split(":")[1]!=null&&jsoData.split(":")[2]!="");
-    } catch (MalformedURLException e) {
-        e.printStackTrace();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-    @Test public void testTow(){
-        App app=new App();
-        String urlApi="http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
-        try {
-            URL url = new URL(urlApi);
-            String jsoData=app.getjson(url);
-            System.out.println(jsoData);
-            ReqContent readJson=app.getJsonObject(jsoData);
-            System.out.println(readJson);
-            Contact cont =new Contact();
-            cont.author=readJson.quoteAuthor;
-            cont.text=readJson.quoteText;
+  @Test
+  public void testBook(){
+      App app=new App();
+      try {
+          assertEquals("quotes.Qoute", app.randomBook("src\\main\\resources\\recentquotes.json").getClass().getName());
+      } catch (FileNotFoundException e) {
+          e.printStackTrace();
+      }
 
-            app.writeQoute(cont,"src/main/resources/recentquotes.json");
-            ArrayList<Contact> contacts=App.getAllQuote("src/main/resources/recentquotes.json");
-            assertEquals(cont.text,contacts.get(contacts.size()-1).text);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+  }
+    @Test public void testGetRandomQuote() throws FileNotFoundException {
+        App classUnderTest = new App();
+        Qoute quote = classUnderTest.randomBook("src\\main\\resources\\recentquotes.json");
+        assertEquals("Test the Type Of the Output of getQuote Method", true, quote instanceof Qoute);
+        assertEquals("The first part of the output","The quote is",quote.toString().split(":")[0]);
+        assertEquals("The text of the quote != null",false,quote.toString().split(":")[1] == null);
     }
-
-
 }
